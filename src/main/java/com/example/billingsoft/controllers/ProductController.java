@@ -4,9 +4,10 @@ import com.example.billingsoft.domain.OrderHeader;
 import com.example.billingsoft.domain.OrderLine;
 import com.example.billingsoft.domain.Product;
 import com.example.billingsoft.services.ProductService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,10 +26,24 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    @PostMapping("api/v1/product")
-    public Long addNewProduct() {
-        System.out.println("post Request Received for : product ");
-        return 50L;
+    @GetMapping("api/v1/product/{id}")
+    public Product getAProduct(@PathVariable("id") Long id) {
+        return productService.getProduct(id);
+    }
+
+    @PostMapping("/api/v1/product")
+    public ResponseEntity addNewProduct(@RequestBody Product product) {
+        Product newProduct = productService.addNewProduct(product);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Location", "/api/v1/product/" + newProduct.getId());
+        return new ResponseEntity(httpHeaders, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/api/v1/product/{id}")
+    public ResponseEntity deleteOrder(@PathVariable("id") Long id){
+        productService.deleteProduct(id);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        return new ResponseEntity(httpHeaders, HttpStatus.NO_CONTENT);
     }
 
 }

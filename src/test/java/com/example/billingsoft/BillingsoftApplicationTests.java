@@ -244,4 +244,41 @@ class BillingsoftApplicationTests {
                 .andExpect(jsonPath("$", hasSize(4)));
     }
 
+    @Test
+    @Transactional
+    void getAProduct() throws Exception {
+        mockMvc.perform(get("/api/v1/product/6")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(6));
+    }
+
+
+    //customer:
+
+    @Test
+    @Transactional
+    void getAllCustomer() throws Exception {
+        mockMvc.perform(get("/api/v1/customer")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(5)));
+    }
+
+    @Test
+    @Transactional
+    void getACustomer() throws Exception {
+        mockMvc.perform(get("/api/v1/customer/48")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(48));
+    }
+
+
+
+
+
 }

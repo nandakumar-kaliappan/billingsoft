@@ -25,4 +25,16 @@ public class ProductServiceImpl implements ProductService {
     public Product addNewProduct(Product product) {
         return productRepository.saveAndFlush(product);
     }
+
+    @Override
+    public Product getProduct(Long id) {
+        return productRepository.findById(id).get();
+    }
+
+    @Override
+    public void deleteProduct(Long id) {
+        productRepository.delete(productRepository.
+                findById(id)
+                .orElseThrow(()->new IllegalArgumentException()));
+    }
 }
