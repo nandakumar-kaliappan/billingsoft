@@ -10,4 +10,6 @@ public interface OrderHeaderService {
     List<OrderHeader> getAllOrders();
 
     OrderHeader saveOrder(OrderHeader orderHeader);
+
+    OrderHeader getOrder(Long orderId);
 }

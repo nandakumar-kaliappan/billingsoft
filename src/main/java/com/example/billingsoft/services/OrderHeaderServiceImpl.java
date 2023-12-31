@@ -25,4 +25,9 @@ public class OrderHeaderServiceImpl implements OrderHeaderService {
     public OrderHeader saveOrder(OrderHeader orderHeader) {
         return orderHeaderRepository.saveAndFlush(orderHeader);
     }
+
+    @Override
+    public OrderHeader getOrder(Long orderId) {
+        return orderHeaderRepository.findById(orderId).orElse(OrderHeader.builder().build());
+    }
 }
