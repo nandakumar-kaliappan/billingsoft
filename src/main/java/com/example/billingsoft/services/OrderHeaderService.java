@@ -12,4 +12,6 @@ public interface OrderHeaderService {
     OrderHeader saveOrder(OrderHeader orderHeader);
 
     OrderHeader getOrder(Long orderId);
+
+    OrderHeader updateOrder(Long id, OrderHeader orderHeader);
 }

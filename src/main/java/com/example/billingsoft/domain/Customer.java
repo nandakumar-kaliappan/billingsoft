@@ -11,6 +11,7 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class Customer extends  BaseEntity{
     private String name;
     private String address;

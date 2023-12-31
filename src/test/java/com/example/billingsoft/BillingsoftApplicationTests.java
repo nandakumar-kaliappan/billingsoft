@@ -2,6 +2,7 @@ package com.example.billingsoft;
 
 import com.example.billingsoft.domain.Customer;
 import com.example.billingsoft.domain.OrderHeader;
+import com.example.billingsoft.domain.OrderLine;
 import com.example.billingsoft.domain.Product;
 import com.example.billingsoft.services.OrderHeaderService;
 import com.example.billingsoft.services.ProductService;
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -52,7 +54,7 @@ class BillingsoftApplicationTests {
 
     @Test
     @Transactional
-    void addNewOrder() throws Exception {
+    void postOrder() throws Exception {
         OrderHeader testOrderHeader = OrderHeader.builder()
                 .amount(BigDecimal.valueOf(10))
                 .count(0)
@@ -89,14 +91,87 @@ class BillingsoftApplicationTests {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andReturn();
-        String neworder = result.getResponse().getHeader("Location");
-        MvcResult result1 = mockMvc.perform(get(neworder).contentType(MediaType.APPLICATION_JSON))
+        String newOrder = result.getResponse().getHeader("Location");
+        MvcResult result1 = mockMvc.perform(get(newOrder).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id",not("null")))
+                .andExpect(jsonPath("$.id", not("null")))
                 .andReturn();
         String content = result1.getResponse().getContentAsString();
         System.out.println("_".repeat(100));
         System.out.println(content);
+        System.out.println("~".repeat(100));
+    }
+
+    @Test
+    @Transactional
+    void putAnOrder() throws Exception {
+        OrderHeader testOrderHeader = OrderHeader.builder()
+                .amount(BigDecimal.valueOf(10))
+                .count(0)
+                .customer(Customer.builder().name("ram").build())
+                .build();
+
+        MvcResult result = mockMvc.perform(post("/api/v1/order")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testOrderHeader)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"))
+                .andReturn();
+        String newOrder = result.getResponse().getHeader("Location");
+        Long id = Long.parseLong(newOrder.split("/")[newOrder.split("/").length - 1]);
+        assertThat(orderHeaderService.getOrder(id).getOrderLines().size()).isEqualTo(0);
+
+        //add orderlines
+        testOrderHeader.addOrderLine(OrderLine.builder().product(Product.builder()
+                .name("Sampoo")
+                .rate(BigDecimal.valueOf(20))
+                .build())
+                .build());
+        testOrderHeader.addOrderLine(OrderLine.builder().product(Product.builder()
+                .name("soap")
+                .rate(BigDecimal.valueOf(40))
+                .build())
+                .build());
+        System.out.println("~".repeat(100));
+        System.out.println(" ".repeat(100));
+        System.out.println(testOrderHeader);
+        System.out.println(" ".repeat(100));
+        System.out.println("~".repeat(100));
+        testOrderHeader.setId(id);
+        MvcResult result1 = mockMvc.perform(put(newOrder)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testOrderHeader)))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        assertThat(orderHeaderService.getOrder(id).getOrderLines().size()).isEqualTo(2);
+
+        System.out.println("_".repeat(100));
+
+        System.out.println(orderHeaderService.getOrder(id));
+
+        System.out.println("~".repeat(100));
+
+        //remove orderlines
+        testOrderHeader.setOrderLines(new HashSet<>());
+        System.out.println("~".repeat(100));
+        System.out.println(" ".repeat(100));
+        System.out.println(testOrderHeader);
+        System.out.println(" ".repeat(100));
+        System.out.println("~".repeat(100));
+        MvcResult result2 = mockMvc.perform(put(newOrder)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testOrderHeader)))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        assertThat(orderHeaderService.getOrder(id).getOrderLines().size()).isEqualTo(0);
+        System.out.println("After removal");
+        System.out.println("_".repeat(100));
+
+        System.out.println(orderHeaderService.getOrder(id));
+
         System.out.println("~".repeat(100));
     }
 

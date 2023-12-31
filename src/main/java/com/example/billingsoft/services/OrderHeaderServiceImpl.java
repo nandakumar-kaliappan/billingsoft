@@ -30,4 +30,13 @@ public class OrderHeaderServiceImpl implements OrderHeaderService {
     public OrderHeader getOrder(Long orderId) {
         return orderHeaderRepository.findById(orderId).orElse(OrderHeader.builder().build());
     }
+
+    @Override
+    @Transactional
+    public OrderHeader updateOrder(Long id, OrderHeader orderHeader) {
+        if(id!=orderHeader.getId()){
+            throw new IllegalArgumentException("OrderHeader has mismatched id");
+        }
+        return orderHeaderRepository.saveAndFlush(orderHeader);
+    }
 }
