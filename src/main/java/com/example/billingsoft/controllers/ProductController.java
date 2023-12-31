@@ -13,32 +13,20 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-public class BillingController {
+public class ProductController {
     private final ProductService productService;
 
-    public BillingController(ProductService productService) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
     }
 
-    @GetMapping("/api/v1/order")
-    public List<OrderHeader> getAllOrders(){
-        OrderHeader oilBill = OrderHeader.builder()
-                .count(1)
-                .orderLines(Set.of(OrderLine
-                        .builder()
-                        .product(Product.builder().name("Oil").build())
-                        .build()))
-                .amount(BigDecimal.valueOf(50))
-                .build();
-        return List.of(oilBill);
-    }
-
     @GetMapping("/api/v1/product")
-    public List<Product> getAllProducts(){
+    public List<Product> getAllProducts() {
         return productService.getAllProducts();
     }
+
     @PostMapping("api/v1/product")
-    public Long addNewProduct(){
+    public Long addNewProduct() {
         System.out.println("post Request Received for : product ");
         return 50L;
     }

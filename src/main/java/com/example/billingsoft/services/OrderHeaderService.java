@@ -8,4 +8,6 @@ import java.util.List;
 @Service
 public interface OrderHeaderService {
     List<OrderHeader> getAllOrders();
+
+    OrderHeader saveOrder(OrderHeader orderHeader);
 }

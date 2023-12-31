@@ -14,7 +14,7 @@ import java.util.Set;
 @Setter
 @Builder
 public class OrderHeader extends BaseEntity {
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Customer customer;
 
     @OneToMany(mappedBy = "orderHeader",

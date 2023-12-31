@@ -1,0 +1,28 @@
+package com.example.billingsoft.services;
+
+import com.example.billingsoft.domain.OrderHeader;
+import com.example.billingsoft.repositories.OrderHeaderRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class OrderHeaderServiceImpl implements OrderHeaderService {
+    private final OrderHeaderRepository orderHeaderRepository;
+
+    public OrderHeaderServiceImpl(OrderHeaderRepository orderHeaderRepository) {
+        this.orderHeaderRepository = orderHeaderRepository;
+    }
+
+    @Override
+    public List<OrderHeader> getAllOrders() {
+        return orderHeaderRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public OrderHeader saveOrder(OrderHeader orderHeader) {
+        return orderHeaderRepository.saveAndFlush(orderHeader);
+    }
+}
