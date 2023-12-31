@@ -175,6 +175,49 @@ class BillingsoftApplicationTests {
         System.out.println("~".repeat(100));
     }
 
+    @Test
+    @Transactional
+    void deleteAnOrder() throws Exception {
+        OrderHeader testOrderHeader = OrderHeader.builder()
+                .amount(BigDecimal.valueOf(10))
+                .count(0)
+                .customer(Customer.builder().name("ram").build())
+                .build();
+
+        MvcResult result = mockMvc.perform(post("/api/v1/order")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(testOrderHeader)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"))
+                .andReturn();
+        String newOrder = result.getResponse().getHeader("Location");
+        MvcResult result1 = mockMvc.perform(get(newOrder).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", not("null")))
+                .andReturn();
+        String content = result1.getResponse().getContentAsString();
+        System.out.println("_".repeat(100));
+        System.out.println(content);
+        System.out.println("~".repeat(100));
+
+        //Delete order
+        MvcResult result2 =
+                mockMvc.perform(delete(newOrder))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        MvcResult result3 = mockMvc.perform(get(newOrder).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", not("null")))
+                .andReturn();
+        content = result1.getResponse().getContentAsString();
+        System.out.println("_".repeat(100));
+        System.out.println(content);
+        System.out.println("~".repeat(100));
+
+    }
+
 
     //    Product
     @Test

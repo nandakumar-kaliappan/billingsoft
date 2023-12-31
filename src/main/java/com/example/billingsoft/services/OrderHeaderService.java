@@ -14,4 +14,6 @@ public interface OrderHeaderService {
     OrderHeader getOrder(Long orderId);
 
     OrderHeader updateOrder(Long id, OrderHeader orderHeader);
+
+    void deleteOrder(Long id);
 }

@@ -39,4 +39,12 @@ public class OrderHeaderServiceImpl implements OrderHeaderService {
         }
         return orderHeaderRepository.saveAndFlush(orderHeader);
     }
+
+    @Override
+    @Transactional
+    public void deleteOrder(Long id) {
+        orderHeaderRepository.delete(orderHeaderRepository.
+                findById(id)
+                .orElseThrow(()->new IllegalArgumentException()));
+    }
 }

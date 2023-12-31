@@ -46,8 +46,13 @@ public class OrderController {
                                    @PathVariable("id") Long id) {
         OrderHeader orderHeader1 = orderHeaderService.updateOrder(id, orderHeader);
         HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.add("Location", "/api/v1/order/" + orderHeader1.getId());
         return new ResponseEntity(httpHeaders, HttpStatus.NO_CONTENT);
 
+    }
+    @DeleteMapping("/api/v1/order/{id}")
+    public ResponseEntity deleteOrder(@PathVariable("id") Long id){
+        orderHeaderService.deleteOrder(id);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        return new ResponseEntity(httpHeaders, HttpStatus.NO_CONTENT);
     }
 }
