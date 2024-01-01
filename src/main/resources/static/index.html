@@ -3,9 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Billing app</title>
+    <link rel="stylesheet" href="css/style.css"></link>
 </head>
 <body>
-<h1>Hi all!</h1>
+
+<div class = "container">
+    <div class="row"><h1 class="title">Billing App</h1></div>
+    <div class="row">
+        <div class="orderGroup">
+            <input class="orderIdInput dropDown" placeholder="Order ID" type="text"
+                   id="orderInput"
+                  list="orderIdOptions">
+            <datalist id="orderIdOptions">
+                <option value="1"> John</option>
+                <option value="2">Thomas</option>
+            </datalist>
+            <button class="btn btnOrderId">&RightArrow;</button>
+        </div>
+        <div class="customerGroup">
+            <input class="customerInput dropDown" placeholder="Customer ID" type="text"
+                   id="customerInput"
+                   list="customerIdOptions">
+            <datalist class="customerIdOptions" id="customerIdOptions">
+
+            </datalist>
+        </div>
+    </div>
+    <div class="row orderDetails">
+        <div class="customerInfo">
+            <h3 class="customerName"></h3>
+            <p class="customerPhone"></p>
+            <p class="customerAddress"></p>
+        </div>
+        <div class="orderInfo">
+            <h3 class="orderType"></h3>
+            <p class="itemCount"></p>
+            <p class="totalPrice"></p>
+        </div>
+    </div>
+
+
+</div>
 
 <script type="text/javascript" src="js/script.js"></script>
 </body>

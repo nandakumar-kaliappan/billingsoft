@@ -23,7 +23,6 @@ public class OrderHeader extends BaseEntity {
 
     @OneToMany(mappedBy = "orderHeader",
     cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-
     @Builder.Default
     @JsonManagedReference
     private Set<OrderLine> orderLines = new HashSet<>();

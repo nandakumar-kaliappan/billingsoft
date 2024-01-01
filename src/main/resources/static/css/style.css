@@ -1,0 +1,43 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: auto;
+    border: 3px solid red;
+    border-radius: 5px;
+
+}
+.row{
+    border: 1px solid lightgreen;
+    background-color: lightblue;
+    display: flex;
+    justify-content: space-around;
+}
+
+
+.orderGroup{
+    display: flex;
+    flex-direction: row;
+    column-gap: 4px;
+}
+
+.orderIdInput{
+    border: dodgerblue;
+}
+
+.btnOrderId{
+    color: blue;
+    background-color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 5px;
+    transition: all .5s;
+}
+.btnOrderId:hover{
+
+    background-color: lightgray;
+
+}
+.hidden{
+    opacity: 0;
+}
