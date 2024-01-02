@@ -1,7 +1,7 @@
 console.log("welcome (Fetched)");
-let customers;
-let products;
-let orders;
+let customers=[];
+let products=[];
+let orders=[];
 let currentCustomer = null;
 let currentProduct = null;
 let orderHeader = {
@@ -45,7 +45,7 @@ const calculateOrderHeaderCountAndAmount = function () {
     orderHeader.amount = orderHeader.orderLines.reduce((acc, ol) => acc + ol.quantity * ol.product.rate, 0);
 };
 
-const updateOrderBanners = function () {
+const updateOrderBanners = function (orderStatus='') {
     console.log(`Current Customer`);
     console.log(orderHeader.customer);
     customerInput.value = orderHeader.customer?.id ?? ``;
@@ -69,13 +69,14 @@ const updateOrderBanners = function () {
         row.insertCell(3).innerText = `${ol.product.rate * ol.quantity}`;
         row.insertCell(4).innerHTML = `<button onclick="editTableData(${ol.product.id})">Edit</button>
 <button onclick="deleteTableData(${ol.product.id})">Delete</button>`;
-    })
+    });
+    orderPlacementStatus.textContent = orderStatus;
     btnPlaceOrder.textContent = orderHeader.id ? `Update` : 'Place';
 }
 
-const calculateOrderHeaderPropertiesAndUpdateBanner = function () {
+const calculateOrderHeaderPropertiesAndUpdateBanner = function (orderStatus='') {
     calculateOrderHeaderCountAndAmount();
-    updateOrderBanners();
+    updateOrderBanners(orderStatus);
 
 };
 
@@ -108,6 +109,7 @@ const updateProducts = function () {
             console.log("fetching products");
             products = data;
             console.log(products);
+            productIdOptions.innerHTML='';
             products.forEach(product => {
                 const optionElement = document.createElement('option');
                 optionElement.value = `${product.id}`;
@@ -126,6 +128,7 @@ const updateCustomersAndCustomerDropDown = function () {
         .then(data => {
             customers = data;
             // console.log("fetching customers individually");
+            customerIdOptions.innerHTML='';
             customers.forEach(customer => {
                 // console.log(`> ${customer.id}  ${customer.name} (phn -${customer.phone})`)
                 const optionElement = document.createElement('option');
@@ -144,6 +147,7 @@ const updateOrdersAndOrdersDropDown = function () {
         .then(response => response.json())
         .then(data => {
             orders = data;
+            orderIdOptions.innerHTML='';
             orders.forEach(order => {
                 const optionElement = document.createElement('option');
                 optionElement.text = `${order.customer.name} (#${order.customer.id})`;
@@ -305,11 +309,22 @@ btnPlaceOrder.addEventListener('click', function () {
             .then(response => {
                 console.log("Post response:");
                 console.log(response);
-                orderPlacementStatus.textContent = response.headers.get("Location");
-            });
+                const newOrderLink = response.headers.get("Location");
+                const orderId = Number(newOrderLink.split('/').at(-1));
+                orderHeader.id = orderId;
+                console.log(orderHeader);
+                updateCustomersProductsAndOrders();
+                calculateOrderHeaderPropertiesAndUpdateBanner("Order Placed");
+                return response.json();
+            })
+            // .then(data => {
+            //
+            // });
     } else {
         orderPlacementStatus.textContent = `Missing Detail`;
     }
 });
 
 calculateOrderHeaderPropertiesAndUpdateBanner();
+console.log("hi")
+updateCustomersProductsAndOrders();
