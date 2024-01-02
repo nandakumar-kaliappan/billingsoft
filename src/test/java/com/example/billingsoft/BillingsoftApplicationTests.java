@@ -61,7 +61,9 @@ class BillingsoftApplicationTests {
                 .customer(Customer.builder().name("ram").build())
                 .build();
         List<OrderHeader> allOrdersInit = orderHeaderService.getAllOrders();
-
+        System.out.println("^*".repeat(50));
+        System.out.println(objectMapper.writeValueAsString(testOrderHeader));
+        System.out.println("^*".repeat(50));
         MvcResult result = mockMvc.perform(post("/api/v1/order")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)

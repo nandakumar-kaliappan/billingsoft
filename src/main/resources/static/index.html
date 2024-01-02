@@ -7,21 +7,21 @@
 </head>
 <body>
 
-<div class = "container">
+<div class="container">
     <div class="row"><h1 class="title">Billing App</h1></div>
     <div class="row">
-        <div class="orderGroup">
-            <input class="orderIdInput dropDown" placeholder="Order ID" type="text"
+        <div class="inputGroup">
+            <label for="orderInput"> Order:</label>
+            <input class="orderIdInput dropDown inputBox" placeholder="ID" type="text"
                    id="orderInput"
-                  list="orderIdOptions">
+                   list="orderIdOptions">
             <datalist id="orderIdOptions">
-                <option value="1"> John</option>
-                <option value="2">Thomas</option>
             </datalist>
             <button class="btn btnOrderId">&RightArrow;</button>
         </div>
-        <div class="customerGroup">
-            <input class="customerInput dropDown" placeholder="Customer ID" type="text"
+        <div class="inputGroup">
+            <label for="customerInput">Customer:</label>
+            <input class="customerInput dropDown inputBox" placeholder="ID" type="text"
                    id="customerInput"
                    list="customerIdOptions">
             <datalist class="customerIdOptions" id="customerIdOptions">
@@ -39,6 +39,71 @@
             <h3 class="orderType"></h3>
             <p class="itemCount"></p>
             <p class="totalPrice"></p>
+        </div>
+    </div>
+    <div class="orderLines">
+        <div class="orderDetailGrid">
+            <div class="orderLinesTitle">
+                <h4>ITEMS</h4>
+            </div>
+            <div class="items">
+                <div class="orderRow orderLines">
+                    <div class="productSelectContainer">
+                        <label for="productInput">Product:</label>
+                        <input class="productInput dropDown inputBox" placeholder="ID" type="text"
+                               id="productInput"
+                               list="productIdOptions">
+                        <datalist class="productIdOptions" id="productIdOptions">
+
+                        </datalist>
+                    </div>
+
+                    <div class="quantityContainer">
+                        <label for="quantityInput">Qty:</label>
+                        <input class="quantityInput inputBox" placeholder="Qty" id="quantityInput"
+                               type="number"
+                               min="1" value="">
+                        <p class="rateBanner" id="rateBanner"></p>
+                    </div>
+                    <div class="priceContainer">
+                        <p class="priceBanner"></p>
+                    </div>
+                    <div class="btnAddItemContainer">
+                        <button class="btnAddItem">+Add</button>
+                    </div>
+
+                </div>
+                <div class="orderRow itemsTableContainer">
+                    <table class="itemsTable">
+
+                        <tr>
+                            <th> Product</th>
+                            <th> Rate(Rs)</th>
+                            <th> Qty</th>
+                            <th> Price(Rs)</th>
+                            <th class="itemControlButtons"> </th>
+                        </tr>
+                        <tr>
+                            <td>that</td>
+                            <td>10</td>
+                            <td>100</td>
+                            <td>1000</td>
+                            <td><span>&#9998; &#9249;</span></td>
+                        </tr>
+                        <tr>
+                            <td>this</td>
+                            <td>20</td>
+                            <td>100</td>
+                            <td>2000</td>
+                            <td><span>&#9998; &#9249;</span></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="orderRow orderLines">
+                    <p class="orderPlacementStatus"></p>
+                    <button class="btnPlaceOrder">Place Order</button>
+                </div>
+            </div>
         </div>
     </div>
 
