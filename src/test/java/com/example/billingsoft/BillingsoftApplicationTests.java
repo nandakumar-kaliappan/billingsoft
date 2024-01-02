@@ -4,8 +4,10 @@ import com.example.billingsoft.domain.Customer;
 import com.example.billingsoft.domain.OrderHeader;
 import com.example.billingsoft.domain.OrderLine;
 import com.example.billingsoft.domain.Product;
+import com.example.billingsoft.services.CustomerService;
 import com.example.billingsoft.services.OrderHeaderService;
 import com.example.billingsoft.services.ProductService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,8 @@ class BillingsoftApplicationTests {
     @Autowired
     ProductService productService;
     @Autowired
+    CustomerService customerService;
+    @Autowired
     OrderHeaderService orderHeaderService;
     @Autowired
     MockMvc mockMvc;
@@ -52,18 +56,16 @@ class BillingsoftApplicationTests {
 
     }
 
+
     @Test
     @Transactional
     void postOrder() throws Exception {
         OrderHeader testOrderHeader = OrderHeader.builder()
                 .amount(BigDecimal.valueOf(10))
                 .count(0)
-                .customer(Customer.builder().name("ram").build())
+                .customer(customerService.getCustomer(50L))
                 .build();
         List<OrderHeader> allOrdersInit = orderHeaderService.getAllOrders();
-        System.out.println("^*".repeat(50));
-        System.out.println(objectMapper.writeValueAsString(testOrderHeader));
-        System.out.println("^*".repeat(50));
         MvcResult result = mockMvc.perform(post("/api/v1/order")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -71,6 +73,9 @@ class BillingsoftApplicationTests {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andReturn();
+        String newOrder = result.getResponse().getHeader("Location");
+        Long id = Long.parseLong(newOrder.split("/")[newOrder.split("/").length - 1]);
+        assertThat(orderHeaderService.getOrder(id).getOrderLines().size()).isEqualTo(0);
 
         List<OrderHeader> allOrdersAft = orderHeaderService.getAllOrders();
         assertThat(allOrdersAft.size()).isEqualTo(allOrdersInit.size() + 1);
@@ -83,7 +88,7 @@ class BillingsoftApplicationTests {
         OrderHeader testOrderHeader = OrderHeader.builder()
                 .amount(BigDecimal.valueOf(10))
                 .count(0)
-                .customer(Customer.builder().name("ram").build())
+                .customer(customerService.getCustomer(50L))
                 .build();
 
         MvcResult result = mockMvc.perform(post("/api/v1/order")
@@ -107,10 +112,11 @@ class BillingsoftApplicationTests {
     @Test
     @Transactional
     void putAnOrder() throws Exception {
+
         OrderHeader testOrderHeader = OrderHeader.builder()
                 .amount(BigDecimal.valueOf(10))
                 .count(0)
-                .customer(Customer.builder().name("ram").build())
+                .customer(customerService.getCustomer(50L))
                 .build();
 
         MvcResult result = mockMvc.perform(post("/api/v1/order")
@@ -125,15 +131,13 @@ class BillingsoftApplicationTests {
         assertThat(orderHeaderService.getOrder(id).getOrderLines().size()).isEqualTo(0);
 
         //add orderlines
-        testOrderHeader.addOrderLine(OrderLine.builder().product(Product.builder()
-                .name("Sampoo")
-                .rate(BigDecimal.valueOf(20))
-                .build())
+        testOrderHeader.addOrderLine(OrderLine
+                .builder()
+                .product(productService.getProduct(6L))
                 .build());
-        testOrderHeader.addOrderLine(OrderLine.builder().product(Product.builder()
-                .name("soap")
-                .rate(BigDecimal.valueOf(40))
-                .build())
+        testOrderHeader.addOrderLine(OrderLine
+                .builder()
+                .product(productService.getProduct(7L))
                 .build());
         System.out.println("~".repeat(100));
         System.out.println(" ".repeat(100));
@@ -183,7 +187,7 @@ class BillingsoftApplicationTests {
         OrderHeader testOrderHeader = OrderHeader.builder()
                 .amount(BigDecimal.valueOf(10))
                 .count(0)
-                .customer(Customer.builder().name("ram").build())
+                .customer(customerService.getCustomer(50L))
                 .build();
 
         MvcResult result = mockMvc.perform(post("/api/v1/order")
@@ -206,8 +210,8 @@ class BillingsoftApplicationTests {
         //Delete order
         MvcResult result2 =
                 mockMvc.perform(delete(newOrder))
-                .andExpect(status().isNoContent())
-                .andReturn();
+                        .andExpect(status().isNoContent())
+                        .andReturn();
 
         MvcResult result3 = mockMvc.perform(get(newOrder).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -278,7 +282,6 @@ class BillingsoftApplicationTests {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(48));
     }
-
 
 
 

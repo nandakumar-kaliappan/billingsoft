@@ -18,7 +18,7 @@ import javax.persistence.ManyToOne;
 public class OrderLine extends BaseEntity{
     private Integer quantity;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @ManyToOne
     private Product product;
 
     @ManyToOne

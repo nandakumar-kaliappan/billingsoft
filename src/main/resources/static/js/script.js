@@ -53,37 +53,37 @@ const updateOrderInfo = function () {
     while (itemsTable.rows.length > 1)
         itemsTable.deleteRow(1);
 
-    orderHeader.orderLines.forEach(ol=>{
+    orderHeader.orderLines.forEach(ol => {
         let row = itemsTable.insertRow(1);
         row.insertCell(0).innerText = `${ol.product.name}(#${ol.product.id})`;
         row.insertCell(1).innerText = `${ol.product.rate}`;
         row.insertCell(2).innerText = `${ol.quantity}`;
-        row.insertCell(3).innerText = `${ol.product.rate*ol.quantity}`;
-        row.insertCell(4).innerHTML =`<button onclick="editTableData(${ol.product.id})">Edit</button>
+        row.insertCell(3).innerText = `${ol.product.rate * ol.quantity}`;
+        row.insertCell(4).innerHTML = `<button onclick="editTableData(${ol.product.id})">Edit</button>
 <button onclick="deleteTableData(${ol.product.id})">Delete</button>`;
 
     })
 };
 
 const deleteTableData = function (productId) {
-    orderHeader.orderLines = orderHeader.orderLines.filter(ol=>ol.product.id != productId);
+    orderHeader.orderLines = orderHeader.orderLines.filter(ol => ol.product.id != productId);
     updateOrderInfo();
 }
 
 const editTableData = function (productId) {
-    console.log("edit called 1 "+productId);
+    console.log("edit called 1 " + productId);
     console.log(orderHeader);
-    orderHeader.orderLines.forEach(ol=>{
+    orderHeader.orderLines.forEach(ol => {
         console.log(ol);
-        console.log("Product id "+productId);
-        console.log("ol.product.id "+ol.product.id);
-        console.log(ol.product.id==productId);
-        if(ol.product.id == productId){
-            console.log("Entered if "+productId);
+        console.log("Product id " + productId);
+        console.log("ol.product.id " + ol.product.id);
+        console.log(ol.product.id == productId);
+        if (ol.product.id == productId) {
+            console.log("Entered if " + productId);
             productInput.value = productId;
             quantityInput.value = ol.quantity;
             rateBanner.textContent = `x ${ol.product.rate}Rs`;
-            priceBanner.textContent = `= ${ol.product.rate* Number(quantityInput.value)}Rs`;
+            priceBanner.textContent = `= ${ol.product.rate * Number(quantityInput.value)}Rs`;
         }
     })
 };
@@ -245,15 +245,26 @@ btnAddItem.addEventListener("click", function () {
 
 });
 
-btnPlaceOrder.addEventListener('click',function () {
+btnPlaceOrder.addEventListener('click', function () {
     console.log(orderHeader);
-    orderHeader.customer=currentCustomer;
-    if(orderHeader.orderLines.length && orderHeader.customer){
-        orderPlacementStatus.textContent = `Ok`;
-    }
-    else{
+    orderHeader.customer = currentCustomer;
+    if (orderHeader.orderLines.length && orderHeader.customer) {
+        fetch('/api/v1/order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderHeader),
+
+        })
+            .then(response => {
+                console.log("Post response:");
+                console.log(response);
+                orderPlacementStatus.textContent=response.headers.get("Location");
+            });
+    } else {
         orderPlacementStatus.textContent = `Missing Detail`;
     }
-})
+});
 
 updateOrderInfo();

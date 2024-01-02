@@ -34,12 +34,12 @@ public class OrderController {
 
     @PostMapping("/api/v1/order")
     public ResponseEntity addNewOrder(@RequestBody OrderHeader orderHeader) {
-//        OrderHeader orderHeader1 = orderHeaderService.saveOrder(orderHeader);
-//       Test--------
-        OrderHeader orderHeader1 = orderHeader;
-        orderHeader1.setId(1L);
-        System.out.println(orderHeader);
-//        --------Test
+        OrderHeader orderHeader1 = orderHeaderService.saveOrder(orderHeader);
+////       Test--------
+//        OrderHeader orderHeader1 = orderHeader;
+//        orderHeader1.setId(1L);
+//        System.out.println(orderHeader);
+////        --------Test
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Location", "/api/v1/order/" + orderHeader1.getId());
         return new ResponseEntity(httpHeaders, HttpStatus.CREATED);

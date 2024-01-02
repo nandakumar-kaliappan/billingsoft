@@ -18,7 +18,7 @@ import java.util.Set;
 @ToString
 @EqualsAndHashCode(exclude = "orderLines")
 public class OrderHeader extends BaseEntity {
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     private Customer customer;
 
     @OneToMany(mappedBy = "orderHeader",
