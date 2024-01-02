@@ -10,17 +10,17 @@ let orderHeader = {
     orderLines: [],
     count: 0,
     amount: 0
-}
+};
 let orderLine = {
     id: null,
     quantity: 0,
     product: null,
     orderHeader: null
-}
+};
 
 
 const orderIdInput = document.querySelector('.orderIdInput');
-const orderIdOptions = document.querySelector('orderIdOptions');
+const orderIdOptions = document.getElementById('orderIdOptions');
 const btnOrderId = document.querySelector('.btnOrderId');
 const customerInput = document.querySelector('.customerInput');
 const customerIdOptions = document.getElementById('customerIdOptions');
@@ -40,13 +40,21 @@ const itemsTable = document.querySelector('.itemsTable');
 const btnPlaceOrder = document.querySelector('.btnPlaceOrder');
 const orderPlacementStatus = document.querySelector('.orderPlacementStatus');
 
-const updateOrderHeaderCountAndAmount = function () {
+const calculateOrderHeaderCountAndAmount = function () {
     orderHeader.count = orderHeader.orderLines.length;
     orderHeader.amount = orderHeader.orderLines.reduce((acc, ol) => acc + ol.quantity * ol.product.rate, 0);
 };
-const updateOrderInfo = function () {
-    updateOrderHeaderCountAndAmount();
-    orderType.textContent = orderHeader.id ? 'Updating order' : 'New Order';
+
+const updateOrderBanners = function () {
+    console.log(`Current Customer`);
+    console.log(orderHeader.customer);
+    customerInput.value = orderHeader.customer?.id ?? ``;
+    customerName.textContent = `${orderHeader.customer?.id ?? ``}  ${orderHeader.customer?.name ?? ``}`;
+    customerPhone.textContent = `${orderHeader.customer?.phone ?? ``}`;
+    customerAddress.textContent = `${orderHeader.customer?.address ?? ``}`;
+
+    orderIdInput.value = orderHeader.id;
+    orderType.textContent = orderHeader.id ? `Order #${orderHeader.id}` : 'New Order';
     itemCount.textContent = `${orderHeader.count} item(s)`;
     totalPrice.textContent = `${orderHeader.amount} Rs`;
 
@@ -61,13 +69,19 @@ const updateOrderInfo = function () {
         row.insertCell(3).innerText = `${ol.product.rate * ol.quantity}`;
         row.insertCell(4).innerHTML = `<button onclick="editTableData(${ol.product.id})">Edit</button>
 <button onclick="deleteTableData(${ol.product.id})">Delete</button>`;
-
     })
+    btnPlaceOrder.textContent = orderHeader.id ? `Update` : 'Place';
+}
+
+const calculateOrderHeaderPropertiesAndUpdateBanner = function () {
+    calculateOrderHeaderCountAndAmount();
+    updateOrderBanners();
+
 };
 
 const deleteTableData = function (productId) {
     orderHeader.orderLines = orderHeader.orderLines.filter(ol => ol.product.id != productId);
-    updateOrderInfo();
+    calculateOrderHeaderPropertiesAndUpdateBanner();
 }
 
 const editTableData = function (productId) {
@@ -104,7 +118,7 @@ const updateProducts = function () {
         .catch(error => {
             console.error('Error fetching products:', error);
         });
-}
+};
 
 const updateCustomersAndCustomerDropDown = function () {
     fetch("/api/v1/customer")
@@ -123,20 +137,26 @@ const updateCustomersAndCustomerDropDown = function () {
         .catch(error => {
             console.error('Error fetching customers:', error);
         });
-}
+};
 
-const updateOrders = function () {
+const updateOrdersAndOrdersDropDown = function () {
     fetch("/api/v1/order")
-        .then(respose => respose.json())
+        .then(response => response.json())
         .then(data => {
             orders = data;
+            orders.forEach(order => {
+                const optionElement = document.createElement('option');
+                optionElement.text = `${order.customer.name} (#${order.customer.id})`;
+                optionElement.value = `${order.id}`;
+                orderIdOptions.appendChild(optionElement);
+            });
             console.log("fetching orders");
             console.log(orders);
         })
         .catch(error => {
             console.error('Error fetching orders:', error);
         });
-}
+};
 
 const getCustomer = function (id) {
     fetch(`/api/v1/customer/${id}`)
@@ -146,14 +166,19 @@ const getCustomer = function (id) {
             return response.json();
         })
         .then(data => {
-            console.log('Data:-')
-            console.log(data)
-        })
-}
+            console.log('Data:-');
+            console.log(data);
+        });
+};
+
 // getCustomer(47);
-updateCustomersAndCustomerDropDown();
-updateProducts();
-updateOrders();
+function updateCustomersProductsAndOrders() {
+    updateCustomersAndCustomerDropDown();
+    updateProducts();
+    updateOrdersAndOrdersDropDown();
+}
+
+updateCustomersProductsAndOrders();
 console.log(orders);
 
 btnOrderId.addEventListener("click", function () {
@@ -162,22 +187,44 @@ btnOrderId.addEventListener("click", function () {
     orders.forEach(order => console.log(order));
 })
 
-customerInput.addEventListener('change', function () {
-    console.log(`Entered: ${customerInput.value}`)
+orderIdInput.addEventListener('change', function () {
     currentCustomer = null;
+    orderHeader = {
+        id: null,
+        customer: null,
+        orderLines: [],
+        count: 0,
+        amount: 0
+    };
+    let selectedOrder = orders.find(order => order.id == orderIdInput.value);
+    if (selectedOrder) {
+        let {id, customer, orderLines, count, amount, ...others} = selectedOrder;
+        orderHeader = {...orderHeader, id, customer, orderLines, count, amount};
+        console.clear();
+        console.log('Selected Order');
+        console.log(orderHeader);
+        updateOrderBanners();
+
+    }
+});
+
+customerInput.addEventListener('change', function () {
+    console.log(`Entered: ${customerInput.value}`);
+    orderHeader = {
+        id: null,
+        customer: null,
+        orderLines: [],
+        count: 0,
+        amount: 0
+    };
+
     customers.forEach(customer => {
         if (customer.id == customerInput.value) {
-            currentCustomer = customer;
+            orderHeader.customer = customer;
         }
     });
-    if (currentCustomer) {
-        console.log(`Current Customer`);
-        console.log(currentCustomer);
-        customerName.textContent = `${currentCustomer.id}  ${currentCustomer.name}`;
-        customerPhone.textContent = `${currentCustomer.phone}`;
-        customerAddress.textContent = `${currentCustomer.address}`;
-
-        updateOrderInfo();
+    if (orderHeader.customer) {
+        calculateOrderHeaderPropertiesAndUpdateBanner();
 
     } else {
         console.log(`No customer Found Check the Customer Id`);
@@ -237,8 +284,7 @@ btnAddItem.addEventListener("click", function () {
         rateBanner.textContent = ``;
         priceBanner.textContent = ``;
         productInput.value = '';
-        updateOrderHeaderCountAndAmount();
-        updateOrderInfo();
+        calculateOrderHeaderPropertiesAndUpdateBanner();
         console.log(orderHeader);
         currentProduct = null;
     }
@@ -247,7 +293,6 @@ btnAddItem.addEventListener("click", function () {
 
 btnPlaceOrder.addEventListener('click', function () {
     console.log(orderHeader);
-    orderHeader.customer = currentCustomer;
     if (orderHeader.orderLines.length && orderHeader.customer) {
         fetch('/api/v1/order', {
             method: 'POST',
@@ -260,11 +305,11 @@ btnPlaceOrder.addEventListener('click', function () {
             .then(response => {
                 console.log("Post response:");
                 console.log(response);
-                orderPlacementStatus.textContent=response.headers.get("Location");
+                orderPlacementStatus.textContent = response.headers.get("Location");
             });
     } else {
         orderPlacementStatus.textContent = `Missing Detail`;
     }
 });
 
-updateOrderInfo();
+calculateOrderHeaderPropertiesAndUpdateBanner();
