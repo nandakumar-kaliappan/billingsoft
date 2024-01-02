@@ -15,14 +15,16 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
-@ToString
+@ToString(callSuper = true)
 @EqualsAndHashCode(exclude = "orderLines")
 public class OrderHeader extends BaseEntity {
     @ManyToOne
     private Customer customer;
 
     @OneToMany(mappedBy = "orderHeader",
-    cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.DETACH, CascadeType.MERGE,CascadeType.ALL},
+            fetch =
+            FetchType.EAGER)
     @Builder.Default
     @JsonManagedReference
     private Set<OrderLine> orderLines = new HashSet<>();

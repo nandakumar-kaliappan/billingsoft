@@ -1,7 +1,7 @@
 console.log("welcome (Fetched)");
-let customers=[];
-let products=[];
-let orders=[];
+let customers = [];
+let products = [];
+let orders = [];
 let currentCustomer = null;
 let currentProduct = null;
 let orderHeader = {
@@ -38,16 +38,16 @@ const priceBanner = document.querySelector('.priceBanner');
 const btnAddItem = document.querySelector('.btnAddItem');
 const itemsTable = document.querySelector('.itemsTable');
 const btnPlaceOrder = document.querySelector('.btnPlaceOrder');
-const orderPlacementStatus = document.querySelector('.orderPlacementStatus');
+const orderPlacementStatus = document.querySelector('.orderPlacementStatusText');
 
 const calculateOrderHeaderCountAndAmount = function () {
     orderHeader.count = orderHeader.orderLines.length;
     orderHeader.amount = orderHeader.orderLines.reduce((acc, ol) => acc + ol.quantity * ol.product.rate, 0);
 };
 
-const updateOrderBanners = function (orderStatus='') {
-    console.log(`Current Customer`);
-    console.log(orderHeader.customer);
+const updateOrderBanners = function (orderStatus = '') {
+    //console.log(`Current Customer`);
+    //console.log(orderHeader.customer);
     customerInput.value = orderHeader.customer?.id ?? ``;
     customerName.textContent = `${orderHeader.customer?.id ?? ``}  ${orderHeader.customer?.name ?? ``}`;
     customerPhone.textContent = `${orderHeader.customer?.phone ?? ``}`;
@@ -70,11 +70,20 @@ const updateOrderBanners = function (orderStatus='') {
         row.insertCell(4).innerHTML = `<button onclick="editTableData(${ol.product.id})">Edit</button>
 <button onclick="deleteTableData(${ol.product.id})">Delete</button>`;
     });
-    orderPlacementStatus.textContent = orderStatus;
-    btnPlaceOrder.textContent = orderHeader.id ? `Update` : 'Place';
+
+    statusText(orderStatus);
+    btnPlaceOrder.textContent = orderHeader.id ? `Update Order` : 'Place Order';
+}
+function statusText(orderStatus) {
+    if (orderStatus) {
+        orderPlacementStatus.textContent = orderStatus.toUpperCase();
+        orderPlacementStatus.parentElement.classList.remove("hidden");
+    } else {
+        orderPlacementStatus.parentElement.classList.add("hidden");
+    }
 }
 
-const calculateOrderHeaderPropertiesAndUpdateBanner = function (orderStatus='') {
+const calculateOrderHeaderPropertiesAndUpdateBanner = function (orderStatus = '') {
     calculateOrderHeaderCountAndAmount();
     updateOrderBanners(orderStatus);
 
@@ -86,15 +95,16 @@ const deleteTableData = function (productId) {
 }
 
 const editTableData = function (productId) {
-    console.log("edit called 1 " + productId);
-    console.log(orderHeader);
+    //console.log("edit called 1 " + productId);
+    //console.log(orderHeader);
     orderHeader.orderLines.forEach(ol => {
-        console.log(ol);
-        console.log("Product id " + productId);
-        console.log("ol.product.id " + ol.product.id);
-        console.log(ol.product.id == productId);
+        //console.log(ol);
+        //console.log("Product id " + productId);
+        //console.log("ol.product.id " + ol.product.id);
+        //console.log(ol.product.id == productId);
         if (ol.product.id == productId) {
-            console.log("Entered if " + productId);
+            //console.log("Entered if " + productId);
+            currentProduct = ol.product;
             productInput.value = productId;
             quantityInput.value = ol.quantity;
             rateBanner.textContent = `x ${ol.product.rate}Rs`;
@@ -106,10 +116,10 @@ const updateProducts = function () {
     fetch("/api/v1/product")
         .then(respose => respose.json())
         .then(data => {
-            console.log("fetching products");
+            //console.log("fetching products");
             products = data;
-            console.log(products);
-            productIdOptions.innerHTML='';
+            //console.log(products);
+            productIdOptions.innerHTML = '';
             products.forEach(product => {
                 const optionElement = document.createElement('option');
                 optionElement.value = `${product.id}`;
@@ -127,10 +137,10 @@ const updateCustomersAndCustomerDropDown = function () {
         .then(respose => respose.json())
         .then(data => {
             customers = data;
-            // console.log("fetching customers individually");
-            customerIdOptions.innerHTML='';
+            // //console.log("fetching customers individually");
+            customerIdOptions.innerHTML = '';
             customers.forEach(customer => {
-                // console.log(`> ${customer.id}  ${customer.name} (phn -${customer.phone})`)
+                // //console.log(`> ${customer.id}  ${customer.name} (phn -${customer.phone})`)
                 const optionElement = document.createElement('option');
                 optionElement.text = `${customer.name} (phn -${customer.phone})`;
                 optionElement.value = `${customer.id}`;
@@ -147,15 +157,15 @@ const updateOrdersAndOrdersDropDown = function () {
         .then(response => response.json())
         .then(data => {
             orders = data;
-            orderIdOptions.innerHTML='';
+            orderIdOptions.innerHTML = '';
             orders.forEach(order => {
                 const optionElement = document.createElement('option');
                 optionElement.text = `${order.customer.name} (#${order.customer.id})`;
                 optionElement.value = `${order.id}`;
                 orderIdOptions.appendChild(optionElement);
             });
-            console.log("fetching orders");
-            console.log(orders);
+            //console.log("fetching orders");
+            //console.log(orders);
         })
         .catch(error => {
             console.error('Error fetching orders:', error);
@@ -165,13 +175,13 @@ const updateOrdersAndOrdersDropDown = function () {
 const getCustomer = function (id) {
     fetch(`/api/v1/customer/${id}`)
         .then(response => {
-            console.log('Response:-');
-            console.log(response);
+            //console.log('Response:-');
+            //console.log(response);
             return response.json();
         })
         .then(data => {
-            console.log('Data:-');
-            console.log(data);
+            //console.log('Data:-');
+            //console.log(data);
         });
 };
 
@@ -183,13 +193,7 @@ function updateCustomersProductsAndOrders() {
 }
 
 updateCustomersProductsAndOrders();
-console.log(orders);
-
-btnOrderId.addEventListener("click", function () {
-    console.log("-Button pressed-1");
-    console.log(orders);
-    orders.forEach(order => console.log(order));
-})
+//console.log(orders);
 
 orderIdInput.addEventListener('change', function () {
     currentCustomer = null;
@@ -213,7 +217,7 @@ orderIdInput.addEventListener('change', function () {
 });
 
 customerInput.addEventListener('change', function () {
-    console.log(`Entered: ${customerInput.value}`);
+    //console.log(`Entered: ${customerInput.value}`);
     orderHeader = {
         id: null,
         customer: null,
@@ -231,7 +235,7 @@ customerInput.addEventListener('change', function () {
         calculateOrderHeaderPropertiesAndUpdateBanner();
 
     } else {
-        console.log(`No customer Found Check the Customer Id`);
+        //console.log(`No customer Found Check the Customer Id`);
         customerName.textContent = `Check The Id You Entered`;
         customerPhone.textContent = ``;
         customerAddress.textContent = ``;
@@ -260,7 +264,8 @@ productInput.addEventListener('change', function () {
 
 });
 
-quantityInput.addEventListener('change', function () {
+quantityInput.addEventListener('input', function () {
+    console.log("Quantity Varying");
     if (currentProduct)
         priceBanner.textContent = `= ${currentProduct.rate * Number(quantityInput.value)}Rs`;
 })
@@ -279,6 +284,7 @@ btnAddItem.addEventListener("click", function () {
             if (ol.product.id == orderLine.product.id) {
                 isItemAlreadyAvailable = true;
                 ol.quantity = orderLine.quantity;
+                console.log(`updated:${orderLine.product.name} qty from ${ol.quantity} to ${orderLine.quantity}`);
             }
         });
         if (!isItemAlreadyAvailable) {
@@ -289,37 +295,53 @@ btnAddItem.addEventListener("click", function () {
         priceBanner.textContent = ``;
         productInput.value = '';
         calculateOrderHeaderPropertiesAndUpdateBanner();
-        console.log(orderHeader);
+        //console.log(orderHeader);
         currentProduct = null;
     }
 
 });
 
 btnPlaceOrder.addEventListener('click', function () {
-    console.log(orderHeader);
+    //console.log(orderHeader);
     if (orderHeader.orderLines.length && orderHeader.customer) {
-        fetch('/api/v1/order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(orderHeader),
+        statusText("Updating...");
+        if (!orderHeader.id) {
 
-        })
-            .then(response => {
-                console.log("Post response:");
-                console.log(response);
+            console.log("OrderHeader Status (POST):");
+            calculateOrderHeaderCountAndAmount();
+            console.log(orderHeader);
+            fetch('/api/v1/order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderHeader),
+            }).then(response => {
+                console.log("POST - operation Complete");
                 const newOrderLink = response.headers.get("Location");
                 const orderId = Number(newOrderLink.split('/').at(-1));
                 orderHeader.id = orderId;
-                console.log(orderHeader);
                 updateCustomersProductsAndOrders();
                 calculateOrderHeaderPropertiesAndUpdateBanner("Order Placed");
                 return response.json();
-            })
-            // .then(data => {
-            //
-            // });
+            });
+
+        } else {
+            console.log("OrderHeader Status (PUT):");
+            calculateOrderHeaderCountAndAmount();
+            console.log(orderHeader);
+            fetch(`/api/v1/order/${orderHeader.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderHeader),
+            }).then(response => {
+                console.log("PUT operation Complete");
+                updateCustomersProductsAndOrders();
+                calculateOrderHeaderPropertiesAndUpdateBanner("Order Updated");
+            });
+        }
     } else {
         orderPlacementStatus.textContent = `Missing Detail`;
     }

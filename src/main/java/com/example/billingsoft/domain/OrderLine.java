@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
 @Setter
 @Getter
 @Builder
-@ToString(exclude = "orderHeader")
+@ToString(exclude = "orderHeader", callSuper = true)
 @EqualsAndHashCode
 public class OrderLine extends BaseEntity{
     private Integer quantity;

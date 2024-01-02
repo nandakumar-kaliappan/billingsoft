@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Setter
 @Builder
 @EqualsAndHashCode
-@ToString
+@ToString(callSuper = true)
 public class Product extends BaseEntity {
     private String name;
     @Column(precision = 10, scale=2)
